@@ -8,7 +8,7 @@ const server = net.createServer((socket) => {
     socket.on("data", (data) => {
         let request_split = data.toString().split("\r\n");
         let request_path = request_split[0].split(" ")[1];
-        let response_body = request_path.split("/")[1];
+        let response_body = request_path.slice(6);
         if (request_path == "/"){
             socket.write('HTTP/1.1 200 OK\r\n\r\n')
         } else if (request_path.split("/")[0] == "echo"){
