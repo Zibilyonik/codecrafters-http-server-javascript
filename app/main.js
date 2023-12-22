@@ -11,7 +11,9 @@ const server = net.createServer((socket) => {
         let response_body = request_path.slice(6);
         if (request_path == "/"){
             socket.write('HTTP/1.1 200 OK\r\n\r\n')
-        } else if (request_path.split("/")[0] == "echo"){
+        } else if (request_path.startsWith("/echo")){
+            console.log(request_path)
+            console.log(request_body)
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${response_body.length}\r\n\r\n${response_body}`);
         }
         else{
