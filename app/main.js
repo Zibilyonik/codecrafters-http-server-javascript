@@ -11,7 +11,7 @@ const server = net.createServer((socket) => {
             let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(1);
             console.log(file_path);
             try{
-                readFileSync(file_path, "utf8")
+                readFileSync(file_path);
                 console.log(data);
                 socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/octet-stream\r\nContent-Length: ${data.length}\r\n\r\n${data}`);    
             } catch (err){
