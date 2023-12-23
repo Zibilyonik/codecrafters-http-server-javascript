@@ -12,7 +12,7 @@ const server = net.createServer((socket) => {
             console.log(request_split)
             console.log(request_path)
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${response_body.length}\r\n\r\n${response_body}`);
-        } else if (request_path == ("/user-agent")){
+        } else if (request_path.endsWith("/user-agent")){
             let request_user_agent = request_split.pop().split(" ")[1];
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${request_user_agent.length}\r\n\r\n${request_user_agent}`);
         }
