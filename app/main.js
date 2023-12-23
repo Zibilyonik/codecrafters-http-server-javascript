@@ -4,6 +4,9 @@ const net = require("net");
 const server = net.createServer((socket) => {
     socket.on("data", (data) => {
         let request_split = data.toString().split("\r\n");
+        if (!request_split[0].startsWith("GET")){
+            request_split = data.toString().split(",");
+        }
         let request_path = request_split[0].split(" ")[1];
         if (request_path == "/"){
             socket.write('HTTP/1.1 200 OK\r\n\r\n')
