@@ -7,9 +7,6 @@ const server = net.createServer((socket) => {
         console.log(request_split);
         let request_user_agent = "";
         for(let i = 0; i < request_split.length; i++){
-            if (request_split[i] == ""){
-                request_split.splice(i, 1);
-            }
             if (request_split[i].startsWith("User-Agent:")){
                 request_user_agent = request_split[i].slice(12);
             }
