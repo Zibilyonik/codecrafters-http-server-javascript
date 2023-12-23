@@ -1,5 +1,5 @@
 const net = require("net");
-const { readFile } = require("fs");
+const { readFile, access, constants } = require("fs");
 const { argv } = require("process");
 
 // Uncomment this to pass the first stage
@@ -26,13 +26,13 @@ const server = net.createServer((socket) => {
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${request_user_agent.length}\r\n\r\n${request_user_agent}`);
         } else if (request_path.startsWith("/files") && file_flag != undefined){
             let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(7);
-            readFile(file_path, "utf-8", (err, file_data) => {
-                if (file_data == undefined || err){
+            access(file_path, constants.F_OK, (err) =>{
+                if (err){
                     socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
-                }            
-                else{
-                    socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
                 }
+                readFile(file_path, "utf-8", (_, file_data) => {           
+                    socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
+                });
             });
         }
         else{
