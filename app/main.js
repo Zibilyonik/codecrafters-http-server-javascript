@@ -1,5 +1,5 @@
 const net = require("net");
-const { readFileSync } = require("fs");
+const { readFile } = require("fs");
 const { argv } = require("process");
 
 // Uncomment this to pass the first stage
@@ -10,12 +10,14 @@ const server = net.createServer((socket) => {
         if (file_flag !== undefined && request_split[0].split(" ")[1].startsWith("/files")){
             let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(7);
             console.log(file_path);
-            try{
-                let file_data = readFileSync(file_path);
-                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);    
-            } catch {
-                socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
-            }
+            readFile(file_path, (err, file_data) => {
+                if (err){
+                    socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+                }            
+                else{
+                    socket.write(`HTTP/1.1 200 OK\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
+                }
+            })
         }
         let request_user_agent = "";
         for(let i = 0; i < request_split.length; i++){
