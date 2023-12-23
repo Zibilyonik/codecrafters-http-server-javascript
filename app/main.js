@@ -4,8 +4,10 @@ const net = require("net");
 const server = net.createServer((socket) => {
     socket.on("data", (data) => {
         let request_split = data.toString().split("\r\n");
-        if (!request_split[0].startsWith("GET")){
-            request_split = data.toString().split(",");
+        for(let i = 0; i < request_split.length; i++){
+            if (request_split[i] == ""){
+                request_split.splice(i, 1);
+            }
         }
         let request_path = request_split[0].split(" ")[1];
         if (request_path == "/"){
