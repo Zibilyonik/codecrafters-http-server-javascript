@@ -1,5 +1,5 @@
 const net = require("net");
-const { open, close } = require("fs");
+const { open, close, fs } = require("fs");
 const { argv } = require("process");
 
 // Uncomment this to pass the first stage
@@ -7,9 +7,8 @@ const server = net.createServer((socket) => {
     socket.on("data", (data) => {
         let request_split = data.toString().split("\r\n");
         let file_flag = argv.find((flag) => flag === "--directory" );
-        console.log(argv)
         if (file_flag !== undefined && request_split[0].split(" ")[1].startsWith("/files")){
-            let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(6);
+            let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(7);
             console.log(file_path);
             open(file_path, "r", (err, fd) => {
                 if (err) {
