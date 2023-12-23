@@ -13,12 +13,13 @@ const server = net.createServer((socket) => {
                 console.log(file_data)
                 if (err){
                     socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+                    socket.end();
                 }            
                 else{
                     socket.write(`HTTP/1.1 200 OK\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
+                    socket.end();
                 }
             })
-            socket.end();
         }
         let request_user_agent = "";
         for(let i = 0; i < request_split.length; i++){
