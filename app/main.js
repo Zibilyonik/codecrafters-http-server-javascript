@@ -27,7 +27,7 @@ const server = net.createServer((socket) => {
         } else if (request_path.startsWith("/files") && file_flag != undefined){
             let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(7);
             readFile(file_path, "utf-8", (err, file_data) => {
-                if (!file_data || err){
+                if (file_data == undefined || err){
                     socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
                 }            
                 else{
