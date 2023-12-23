@@ -32,7 +32,7 @@ const server = net.createServer((socket) => {
                     socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
                 }            
                 else{
-                    socket.write(`HTTP/1.1 200 OK\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
+                    socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
                 }
             });
         }
