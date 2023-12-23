@@ -11,9 +11,8 @@ const server = net.createServer((socket) => {
             let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(7);
             console.log(file_path);
             try{
-                readFileSync(file_path);
-                console.log(data);
-                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${data.length}\r\n\r\n${data}`);    
+                let file_data = readFileSync(file_path);
+                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);    
                 socket.end();
             } catch (err){
                 socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
