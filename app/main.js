@@ -8,7 +8,7 @@ const server = net.createServer((socket) => {
         let request_split = data.toString().split("\r\n");
         let file_flag = argv.find((flag) => flag === "--directory" );
         if (file_flag !== undefined && request_split[0].split(" ")[1].startsWith("/files")){
-            let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(7);
+            let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(1);
             console.log(file_path);
             open(file_path, "r", (err, fd) => {
                 if (err) {
