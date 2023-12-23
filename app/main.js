@@ -1,5 +1,5 @@
 const net = require("net");
-const { open, close, readFileSync } = require("fs");
+const { open, close, readFile } = require("fs");
 const { argv } = require("process");
 
 // Uncomment this to pass the first stage
@@ -15,7 +15,7 @@ const server = net.createServer((socket) => {
                     socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
                 } else {
                     try {
-                        let file_data = readFileSync(file_path, "utf8");
+                        let file_data = readFile(file_path, "utf8");
                         socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/octet-stream\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
                     }finally {
                         close(fd, (err) => {
