@@ -4,6 +4,7 @@ const net = require("net");
 const server = net.createServer((socket) => {
     socket.on("data", (data) => {
         let request_split = data.toString().split("\r\n");
+        console.log(request_split);
         let request_user_agent = "";
         for(let i = 0; i < request_split.length; i++){
             if (request_split[i] == ""){
