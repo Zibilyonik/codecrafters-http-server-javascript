@@ -4,7 +4,7 @@ const { argv } = require("process");
 
 // Uncomment this to pass the first stage
 const server = net.createServer((socket) => {
-    socket.on("data", (data) => {
+    socket.on("data", async (data) => {
         let request_split = data.toString().split("\r\n");
         let file_flag = argv.find((flag) => flag === "--directory" );
         if (file_flag !== undefined && request_split[0].split(" ")[1].startsWith("/files")){
@@ -18,7 +18,6 @@ const server = net.createServer((socket) => {
                     socket.write(`HTTP/1.1 200 OK\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
                 }
             })
-            socket.end();
         }
         let request_user_agent = "";
         for(let i = 0; i < request_split.length; i++){
