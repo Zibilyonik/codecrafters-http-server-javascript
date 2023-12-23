@@ -14,8 +14,10 @@ const server = net.createServer((socket) => {
                 readFileSync(file_path);
                 console.log(data);
                 socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/octet-stream\r\nContent-Length: ${data.length}\r\n\r\n${data}`);    
+                socket.end();
             } catch (err){
                 socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+                socket.end();
             }
         }
         let request_user_agent = "";
