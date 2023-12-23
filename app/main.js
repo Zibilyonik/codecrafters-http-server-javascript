@@ -1,4 +1,4 @@
-import net from "net";
+const net = require("net");
 
 // Uncomment this to pass the first stage
 const server = net.createServer((socket) => {
