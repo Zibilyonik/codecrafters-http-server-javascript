@@ -9,17 +9,19 @@ const server = net.createServer((socket) => {
         let file_flag = argv.find((flag) => flag === "--directory" );
         if (file_flag !== undefined && request_split[0].split(" ")[1].startsWith("/files")){
             let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(7);
-            readFile(file_path, "utf-8", (err, file_data) => {
-                console.log(file_data)
-                if (err){
-                    socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
-                    socket.end();
-                }            
-                else{
-                    socket.write(`HTTP/1.1 200 OK\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
-                    socket.end();
-                }
-            })
+            try {
+                readFile(file_path, "utf-8", (err, file_data) => {
+                    console.log(file_data)
+                    if (err){
+                        socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+                    }            
+                    else{
+                        socket.write(`HTTP/1.1 200 OK\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
+                    }
+                })
+            } finally {
+                socket.end();
+            }
         }
         let request_user_agent = "";
         for(let i = 0; i < request_split.length; i++){
