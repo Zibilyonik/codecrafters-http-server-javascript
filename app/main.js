@@ -10,14 +10,13 @@ const server = net.createServer((socket) => {
         if (file_flag !== undefined && request_split[0].split(" ")[1].startsWith("/files")){
             let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(1);
             console.log(file_path);
-            readFileSync(file_path, "utf8", (err, data) => {
-                if (err){
-                    socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
-                    return;
-                }
+            try{
+                readFileSync(file_path, "utf8")
                 console.log(data);
                 socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/octet-stream\r\nContent-Length: ${data.length}\r\n\r\n${data}`);    
-            });
+            } catch (err){
+                socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+            }
         }
         let request_user_agent = "";
         for(let i = 0; i < request_split.length; i++){
