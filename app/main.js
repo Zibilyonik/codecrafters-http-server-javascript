@@ -18,6 +18,7 @@ const server = net.createServer((socket) => {
                     socket.write(`HTTP/1.1 200 OK\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
                 }
             })
+            socket.end();
         }
         let request_user_agent = "";
         for(let i = 0; i < request_split.length; i++){
