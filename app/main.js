@@ -6,7 +6,7 @@ const { argv } = require("process");
 const server = net.createServer((socket) => {
     socket.on("data", (data) => {
         let request_split = data.toString().split("\r\n");
-        let file_flag = execArgv.find((flag) => flag === "--directory" );
+        let file_flag = argv.find((flag) => flag === "--directory" );
         console.log(argv)
         if (file_flag !== undefined && request_split[0].split(" ")[1].startsWith("/files")){
             let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(6);
