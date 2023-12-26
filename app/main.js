@@ -36,7 +36,7 @@ const server = net.createServer((socket) => {
         } else if (obj.path.startsWith("/files") && obj.flag != undefined){
             let file_path = argv[argv.length - 1] + obj.split[0].split(" ")[1].slice(7);
             if (obj.type === "POST"){
-                writeFile(file_path, body, (err) => {
+                writeFile(file_path, obj.body, (err) => {
                     if (err){
                         socket.write(response_not_found);
                     }
