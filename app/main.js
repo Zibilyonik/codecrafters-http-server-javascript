@@ -33,7 +33,7 @@ const server = net.createServer((socket) => {
                     if (err){
                         socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
                     }
-                    socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
+                    socket.write(`HTTP/1.1 201 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
                 });
             } else {
                 access(file_path, constants.F_OK, (err) =>{
