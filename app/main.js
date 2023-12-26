@@ -2,57 +2,62 @@ const net = require("net");
 const { readFile, access, constants, writeFile } = require("fs");
 const { argv } = require("process");
 
-// Uncomment this to pass the first stage
+
+//Functions
+const requestSplitter = (request) => {
+    let split = request.toString().split("\r\n");
+    const type = split[0].split(" ")[0];
+    const flag = argv.find((flag) => flag === "--directory" );
+    const user_agent = split.find(({item}) => item.startsWith("User-Agent:")).slice(12);
+    let path = split[0].split(" ")[1];
+    const body = split[split.length - 1];
+    return {split, type, flag, user_agent, path, body};
+}
+const content_length = (item) => `Content-Length: ${item.length}\r\n\r\n`;
+
+const socket_response = (item) => `${response_ok}Content-Type: text/plain\r\n${content_length(item)}${item}`
+
+//Constants
+const response_ok = 'HTTP/1.1 200 OK\r\n';
+const response_not_found = 'HTTP/1.1 404 Not Found\r\n\r\n';
+
+//Server
 const server = net.createServer((socket) => {
     socket.on("data", async (data) => {
-        let request_split = data.toString().split("\r\n");
-        let request_type = request_split[0].split(" ")[0];
-        let file_flag = argv.find((flag) => flag === "--directory" );
-        let request_user_agent = "";
-        for(let i = 0; i < request_split.length; i++){
-            if (request_split[i].startsWith("User-Agent:")){
-                request_user_agent = request_split[i].slice(12);
-            }
-        }
-        let request_path = request_split[0].split(" ")[1];
-        if (request_path == "/"){
-            socket.write('HTTP/1.1 200 OK\r\n\r\n')
-        } else if (request_path.startsWith("/echo")){
-            let response_body = request_path.slice(6);
-            console.log(request_split)
-            console.log(request_path)
-            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${response_body.length}\r\n\r\n${response_body}`);
-        } else if (request_path.endsWith("/user-agent")){
-            console.log(request_split + "is the array")
-            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${request_user_agent.length}\r\n\r\n${request_user_agent}`);
-        } else if (request_path.startsWith("/files") && file_flag != undefined){
-            let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(7);
+        const obj = requestSplitter(data);
+        if (obj.path == "/"){
+            socket.write(response_ok + '\r\n');
+        } else if (obj.path.startsWith("/echo")){
+            const response_body = obj.path.slice(6);
+            socket.write(socket_response(response_body));
+        } else if (obj.path.endsWith("/user-agent")){
+            socket.write(socket_response(obj.user_agent));
+        } else if (obj.path.startsWith("/files") && obj.flag != undefined){
+            let file_path = argv[argv.length - 1] + obj.split[0].split(" ")[1].slice(7);
             if (request_type === "POST"){
-                let file_data = request_split[request_split.length - 1];
-                writeFile(file_path, file_data, (err) => {
+                writeFile(file_path, body, (err) => {
                     if (err){
-                        socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+                        socket.write(response_not_found);
                     }
-                    socket.write(`HTTP/1.1 201 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
+                    socket.write(`HTTP/1.1 201 OK\r\nContent-Type: application/octet-stream\r\n${content_length(body)}${body}`);
                 });
             } else {
                 access(file_path, constants.F_OK, (err) =>{
                     if (err){
-                        socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+                        socket.write(response_not_found);
                     }
-                    readFile(file_path, "utf-8", (_, file_data) => {           
-                        socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
+                    readFile(file_path, "utf-8", (_, body) => {           
+                        socket.write(socket_response(body));
                     });
                 });
             }
         }
         else{
-            socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
+            socket.write(response_not_found)
         }   
     })
     socket.on("close", () => {
         socket.end();
-        // server.close();
     });
 });
 
