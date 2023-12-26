@@ -1,11 +1,12 @@
 const net = require("net");
-const { readFile, access, constants } = require("fs");
+const { readFile, access, constants, writeFile } = require("fs");
 const { argv } = require("process");
 
 // Uncomment this to pass the first stage
 const server = net.createServer((socket) => {
     socket.on("data", async (data) => {
         let request_split = data.toString().split("\r\n");
+        let request_type = request_split[0].split(" ")[0];
         let file_flag = argv.find((flag) => flag === "--directory" );
         let request_user_agent = "";
         for(let i = 0; i < request_split.length; i++){
@@ -26,14 +27,24 @@ const server = net.createServer((socket) => {
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${request_user_agent.length}\r\n\r\n${request_user_agent}`);
         } else if (request_path.startsWith("/files") && file_flag != undefined){
             let file_path = argv[argv.length - 1] + request_split[0].split(" ")[1].slice(7);
-            access(file_path, constants.F_OK, (err) =>{
-                if (err){
-                    socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
-                }
-                readFile(file_path, "utf-8", (_, file_data) => {           
+            if (request_type === "POST"){
+                let file_data = request_split[request_split.length - 1];
+                writeFile(file_path, file_data, (err) => {
+                    if (err){
+                        socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+                    }
                     socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
                 });
-            });
+            } else {
+                access(file_path, constants.F_OK, (err) =>{
+                    if (err){
+                        socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+                    }
+                    readFile(file_path, "utf-8", (_, file_data) => {           
+                        socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${file_data.length}\r\n\r\n${file_data}`);
+                    });
+                });
+            }
         }
         else{
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
