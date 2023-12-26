@@ -48,7 +48,7 @@ const server = net.createServer((socket) => {
                         socket.write(response_not_found);
                     }
                     readFile(file_path, "utf-8", (_, body) => {           
-                        socket.write(socket_response(body));
+                        socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\n${content_length(body)}${body}`);
                     });
                 });
             }
