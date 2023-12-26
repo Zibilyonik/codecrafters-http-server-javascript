@@ -40,7 +40,7 @@ const server = net.createServer((socket) => {
                     if (err){
                         socket.write(response_not_found);
                     }
-                    socket.write(`HTTP/1.1 201 OK\r\nContent-Type: application/octet-stream\r\n${content_length(body)}${body}`);
+                    socket.write(`HTTP/1.1 201 OK\r\nContent-Type: application/octet-stream\r\n${content_length(obj.body)}${obj.body}`);
                 });
             } else {
                 access(file_path, constants.F_OK, (err) =>{
