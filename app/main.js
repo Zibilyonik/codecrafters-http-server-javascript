@@ -8,7 +8,7 @@ const requestSplitter = (request) => {
     let split = request.toString().split("\r\n");
     const type = split[0].split(" ")[0];
     const flag = argv.find((flag) => flag === "--directory" );
-    const user_agent = split.find(({item}) => item.startsWith("User-Agent:")).slice(12);
+    const user_agent = split.find((item) => item.startsWith("User-Agent:")).slice(12);
     let path = split[0].split(" ")[1];
     const body = split[split.length - 1];
     return {split, type, flag, user_agent, path, body};
